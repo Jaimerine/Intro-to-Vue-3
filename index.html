@@ -11,14 +11,83 @@
   <body>
     <div id="app">
       <div class="nav-bar"></div>
+
+      <div class="cart">Cart({{ cart }})</div>
       
       <div class="product-display">
         <div class="product-container">
           <div class="product-image">
-            <!-- image goes here -->
+    <!-- v-bind is a binding directive, add the name (similar to product as the source) -->
+            <!-- <img v-bind:src="image" alt=""> -->
+
+            <!-- shorthand is to remove v-bind and just add colon: -->
+            <img :src="image" :alt="description" :class="[inventory == 0 ? 'out-of-stock-img' : '']">
           </div>
           <div class="product-info">
-            <h1>{{ product }}</h1>
+            <!-- expression to reference data object -->
+            <!-- <h1>{{ product }}</h1> -->
+
+    <!-- computed properties are cached leading to performance benefits as only re-calculate if dependencies in calc change -->
+            <h1>{{ title }}</h1>
+
+            <a :href="url">Click here for more info.</a>
+            
+    <!-- v-if directive, add v-else if applicable -->
+            <!-- <p v-if="inStock">In Stock</p>
+            <p v-else>Out of Stock</p> -->
+
+    <!-- v-show directive: toggles visibility (display: none) given boolean value -->
+            <p v-show="onSale">{{ title }} are on sale</p>
+
+    <!-- conditional logic -->
+            <p v-if="inventory > 10">In Stock</p>
+            <p v-else-if="inventory <= 10 && inventory > 0">Almost sold out!</p>
+            <p v-else>Out of Stock</p>
+            
+    <!-- v-for directive (standard for loop where detail is alias for each element) -->
+            <ul>
+              <li v-for='detail in details'>{{ detail }}</li>
+            </ul>
+            
+            <!-- give each DOM element a unique key with :key (v-bind:key) - tells Vue how the html elements relate to the data -->
+            <div 
+              v-for='(variant, index) in variants' 
+                :key='variant.id' 
+                @mouseover="updateVariant(index)"
+                class=color-circle
+                :style="{ 'background-color': variant.color }">
+              <!-- {{ variant.color }} -->
+            </div>
+            <!-- above, add style binding setting the CSS background color property (JS casing: backgroundColor or CSS casing 'background-color' with quotes) -->
+
+            <ul>
+              <li v-for="size in sizes">{{ size }}</li>
+            </ul>
+
+    <!-- event listener with v-on directive (or @)-->
+            <!-- <button class="button" v-on:click="cart += 1">Add to Cart</button> -->
+
+            <!-- above with instruction or below using a method... -->
+            <!-- :class binding applies class if subsequent condition is true as below:
+              :class="{ disabledButton: !inStock }"
+            or using tiernary operator like below
+            -->
+            <button 
+              class="button"
+              :class="[inventory > 0 ? disabledButton : '']"
+              :disabled="!inStock"
+              v-on:click="addToCart">
+              Add to Cart
+            </button>
+
+            <!-- note @click used below -->
+            <button 
+              class="button" 
+              @click="removeFromCart" 
+              v-if="cart > 0">
+              Remove Item
+            </button>
+
           </div>
         </div>
       </div>
@@ -29,6 +98,7 @@
 
     <!-- Mount App -->
     <script>
+      // mount app into DOM - argument is DOM selector (i.e. #app - div with id=app)
       const mountedApp = app.mount('#app')
     </script>
   </body>
